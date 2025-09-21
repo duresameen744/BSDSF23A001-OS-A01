@@ -1,10 +1,9 @@
-# src/Makefile - compiles each .c into object files in ../obj
-# and links them into ../bin/client
+# src/Makefile - builds both direct client and a static-library-based client (client_static)
 
-# --- Macros (variables) ---
 CC      := gcc
+AR      := ar
+RANLIB  := ranlib
 CFLAGS  := -Wall -Wextra -I../include
-# Add debugging flags by overriding when needed (make DEBUG=1)
 ifdef DEBUG
 CFLAGS += -g -O0
 else
@@ -14,35 +13,53 @@ endif
 SRCDIR  := .
 OBJDIR  := ../obj
 BINDIR  := ../bin
+LIBDIR  := ../lib
 
 SOURCES := $(wildcard $(SRCDIR)/*.c)
-OBJECTS := $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SOURCES))
+# library sources: everything except main.c
+LIB_SRCS := $(filter-out $(SRCDIR)/main.c,$(SOURCES))
+LIB_OBJECTS := $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(LIB_SRCS))
+MAIN_OBJECT := $(OBJDIR)/main.o
 
-TARGET  := $(BINDIR)/client
+TARGET := $(BINDIR)/client
+TARGET_STATIC := $(BINDIR)/client_static
+LIB := $(LIBDIR)/libmyutils.a
 
-.PHONY: all clean run
+.PHONY: all clean run run_static
 
-# Default target
-all: $(TARGET)
+all: $(TARGET) $(TARGET_STATIC)
 
-# Ensure directories exist
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
 
 $(BINDIR):
 	mkdir -p $(BINDIR)
 
-# Pattern rule: how to build each object from its C source
+$(LIBDIR):
+	mkdir -p $(LIBDIR)
+
+# compile .c -> .o automatically
 $(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Link rule: link all objects into the final executable
-$(TARGET): $(OBJECTS) | $(BINDIR)
-	$(CC) $(CFLAGS) $(OBJECTS) -o $(TARGET)
-# Run the program
+# direct link (previous method) - links all objects directly
+$(TARGET): $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SOURCES)) | $(BINDIR)
+	$(CC) $(CFLAGS) $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SOURCES)) -o $(TARGET)
+
+# create static library (archive the selected .o files)
+$(LIB): $(LIB_OBJECTS) | $(LIBDIR)
+	$(AR) rcs $(LIB) $(LIB_OBJECTS)
+	$(RANLIB) $(LIB)
+
+# build client_static by linking main.o with the static library
+$(TARGET_STATIC): $(MAIN_OBJECT) $(LIB) | $(BINDIR)
+	$(CC) $(CFLAGS) $(MAIN_OBJECT) $(LIB) -o $(TARGET_STATIC)
+
 run: $(TARGET)
 	./$(TARGET)
 
-# Remove object files and the binary
+run_static: $(TARGET_STATIC)
+	./$(TARGET_STATIC)
+
 clean:
-	rm -f $(OBJDIR)/*.o $(TARGET)
+	rm -f $(OBJDIR)/*.o $(TARGET) $(TARGET_STATIC) $(LIB)
