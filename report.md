@@ -161,6 +161,7 @@ If all of the above are true on your GitHub repository, Feature-2 is complete.
 * Compiled binary `bin/client` (Linux x86\_64)
 
 ---
+*End of Feature-2*
 
 ## FEATURE 3
 Q1: Compare Makefile (Part 2) vs Makefile (Part 3). Key differences enabling static library
@@ -181,5 +182,4 @@ Yes — because static linking copies the needed object code from the archive in
 
 ---
 
-*End of REPORT.md — Feature-2*
 
