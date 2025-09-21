@@ -162,6 +162,24 @@ If all of the above are true on your GitHub repository, Feature-2 is complete.
 
 ---
 
+## FEATURE 3
+Q1: Compare Makefile (Part 2) vs Makefile (Part 3). Key differences enabling static library
+
+Part 2 Makefile compiled every .c and linked all resulting .o files into the executable directly ($(TARGET): $(OBJECTS)).
+
+Part 3 Makefile separates utility sources from main.c. It compiles utility sources into object files and then archives them into lib/libmyutils.a (using ar). The final executable is linked either by passing the .a file directly or by using -L/-l. So new variables: LIBDIR, LIB_SRCS, LIB_OBJECTS, LIB. New rules: build archive (ar/ranlib) and link main.o with the archive. This makes reuse and packaging easier.
+
+Q2: What is ar and why use ranlib?
+
+ar is the archiver: it packs one or more object files into a single archive file (.a). This archive is a static library that can be linked into executables.
+
+ranlib creates (or updates) an index in the archive. This index speeds up the linker and makes archive contents discoverable by the linker on some systems. Many ar implementations support -s or rcs to create the index already; running ranlib afterward is a standard step to ensure portability.
+
+Q3: When you run nm on client_static, are mystrlen symbols present? What does that tell you?
+
+Yes — because static linking copies the needed object code from the archive into the final executable, symbols like mystrlen commonly appear inside the executable’s symbol table (unless stripped or aggressively optimized away). This shows the library’s code is embedded in the executable at link time, and the program no longer needs the .a file at runtime.
+
 ---
 
 *End of REPORT.md — Feature-2*
+
