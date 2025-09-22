@@ -221,3 +221,27 @@ It installs the man page (client.1) into /usr/local/share/man/man1 so users can 
 
 Key Difference: The new Makefile simulates real-world software installation, not just compilation.
 
+2. What is the purpose of man pages?
+
+Man pages are the official Linux documentation system.
+
+They allow users to access help directly from the terminal by typing man <command>.
+
+In our project, the client.1 man page provides a description, usage, and author information for the program.
+
+This makes the project feel professional and user-friendly, because the program has built-in documentation accessible like any standard Linux command.
+
+3. Why add an install target?
+
+Without install, the user would have to run the program from the build folder and remember paths manually.
+
+With install, the program and man page are copied into the system-wide directories where Linux expects them.
+
+This means:
+
+Users can just type client instead of ./bin/client.
+
+Users can type man client to see documentation.
+
+In professional projects, this is how software is packaged and distributed, making it easy for anyone to use after installation.
+
