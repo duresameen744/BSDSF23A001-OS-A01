@@ -202,4 +202,22 @@ The static client (`client_static`) includes copies of the library code inside t
 **3) What is LD_LIBRARY_PATH and why was it necessary?**  
 `LD_LIBRARY_PATH` is an environment variable that tells the dynamic loader extra directories to search for shared libraries at program start. We set it to our project `lib/` because the loader does not search project folders by default. This shows the loader is responsible for finding `.so` files at runtime; the linker step only notes the library name, the loader must locate it when the program runs.
 
+## FEATURE 5
+
+Feature 5: Creating and Accessing Man Pages
+1. Compare the Makefile (before vs after)
+
+Before Feature 5:
+The Makefile only handled building the project and linking static or dynamic libraries. It did not support installation or documentation.
+
+After Feature 5:
+A new install target was added.
+
+It creates standard system directories (/usr/local/bin, /usr/local/share/man/man1).
+
+It copies the compiled program (client) into /usr/local/bin so it can be run from anywhere.
+
+It installs the man page (client.1) into /usr/local/share/man/man1 so users can read documentation using the man command.
+
+Key Difference: The new Makefile simulates real-world software installation, not just compilation.
 
