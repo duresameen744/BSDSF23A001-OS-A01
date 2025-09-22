@@ -14,3 +14,9 @@ clean:
 	  $(MAKE) -C $$dir clean; \
 	done
 	@echo "Clean complete."
+install: all
+	mkdir -p /usr/local/bin
+	mkdir -p /usr/local/share/man/man1
+	cp ./bin/client /usr/local/bin/client
+	cp ./man/man1/client.1 /usr/local/share/man/man1/client.1
+	@echo "Installed client and its man page."
