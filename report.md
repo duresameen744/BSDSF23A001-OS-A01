@@ -182,4 +182,24 @@ Yes — because static linking copies the needed object code from the archive in
 
 ---
 
+## FEATURE 4
+
+## Feature-4 — Dynamic Library (shared object)
+
+### What I implemented
+- Built position-independent objects and created a shared library `lib/libmyutils.so`.
+- Modified Makefile to generate both static and dynamic versions and their respective executables: `bin/client_static` and `bin/client_dynamic`.
+- Demonstrated runtime library resolution using `LD_LIBRARY_PATH` and analyzed symbols with `nm` and `readelf`.
+
+### Answers to report questions
+
+**1) What is Position-Independent Code (-fPIC) and why is it needed?**  
+Position-Independent Code (PIC) is compiled so the CPU instructions inside the compiled object do not assume the code will be loaded at a fixed memory address. Shared libraries can be loaded at different addresses in different processes, so PIC ensures code will work correctly no matter where it ends up in memory. We compile our library objects with `-fPIC` so they can be combined into a `.so`.
+
+**2) Why is there a size difference between static and dynamic clients?**  
+The static client (`client_static`) includes copies of the library code inside the executable itself, so it grows larger. The dynamic client (`client_dynamic`) keeps the library code in `libmyutils.so` and only stores references to it; the actual code is loaded at runtime. This makes the dynamic executable much smaller.
+
+**3) What is LD_LIBRARY_PATH and why was it necessary?**  
+`LD_LIBRARY_PATH` is an environment variable that tells the dynamic loader extra directories to search for shared libraries at program start. We set it to our project `lib/` because the loader does not search project folders by default. This shows the loader is responsible for finding `.so` files at runtime; the linker step only notes the library name, the loader must locate it when the program runs.
+
 
